@@ -1,0 +1,19 @@
+# Dockerfile.birdnet_analyzer
+FROM arm64v8/python:3.9-slim
+
+# Install system dependencies (if any of these modules require compiling extensions)
+RUN apt-get update && apt-get install -y \
+    portaudio19-dev \
+    python3-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+# Copy all repository files into the container
+COPY . .
+
+# Install Python dependencies
+RUN pip install --no-cache-dir numpy birdnetlib requests
+
+# Run the BirdNET analyzer module
+CMD ["python", "birdnet_analyzer.py"]
