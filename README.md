@@ -64,8 +64,8 @@ Replace `<VERSION>` with the desired version number (e.g., `1.29.2`).
 Clone the repository onto your Raspberry Pi (insert your repo URL where indicated):
 
 ```bash
-git clone <YOUR_REPOSITORY_URL>
-cd <REPOSITORY_DIRECTORY>
+git clone https://github.com/dhanujg/Digital-Ecology-Sensing-Network.git
+cd Digital-Ecology-Sensing-Network
 ```
 
 Ensure that all files (Python modules, Dockerfiles, `config.json`) and the `local_data/` folder are in the repository’s root.
