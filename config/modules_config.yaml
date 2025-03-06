@@ -1,0 +1,11 @@
+BUFFER_SIZE: 2              # Number of audio chunks to combine per recording (e.g., 2 chunks)
+CHUNK_DURATION: 6           # Duration in seconds of each audio chunk recorded
+SAMPLE_RATE: 44100          # Audio sampling rate in Hz
+CHANNELS: 4                 # Number of audio channels (e.g., microphone configuration)
+MAX_RECORDINGS: 5           # Maximum number of recordings to keep (if implementing cleanup)
+LAT: 30.2672                # Latitude for BirdNET analysis (Austin, Texas)
+LON: -97.7431               # Longitude for BirdNET analysis (Austin, Texas)
+RECORDINGS_FOLDER: recordings_data    # Folder to store recorded WAV files from the audio recording module
+BIRDNET_DATA_STREAM_FOLDER: birdnet_data_stream   # Folder to store the ledger CSV and bird images from analysis
+LEDGER_FILE: birdnet_data_stream/ledger.csv         # Path to the CSV file that records detection results
+CURRENT_BIRD_IMAGE: birdnet_data_stream/current_bird.png   # Path where the current bird image is saved
