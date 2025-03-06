@@ -19,9 +19,10 @@ import numpy as np
 import sounddevice as sd
 
 def load_config():
-    """Load configuration values from the JSON config file."""
-    with open("config.json", "r") as f:
-        return json.load(f)
+    """Load configuration values from the yaml config file."""
+    import yaml
+    with open("config/module_config.yaml", "r") as f:
+        return yaml.safe_load(f)
 
 def record_audio(duration, sample_rate, channels, device=None):
     """Record audio for the specified duration and return the NumPy array data."""

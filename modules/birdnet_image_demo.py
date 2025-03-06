@@ -19,9 +19,10 @@ import requests
 import urllib.parse
 
 def load_config():
-    """Load configuration values from the JSON config file."""
-    with open("config.json", "r") as f:
-        return json.load(f)
+    """Load configuration values from the YAML config file."""
+    import yaml
+    with open("config/module_config.yaml", "r") as f:
+        return yaml.safe_load(f)
 
 def check_internet_connection(test_url="https://www.google.com", timeout=5):
     """Return True if an internet connection is detected; otherwise, False."""

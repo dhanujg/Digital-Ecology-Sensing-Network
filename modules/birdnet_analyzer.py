@@ -25,8 +25,9 @@ csv_lock = Lock()
 
 def load_config():
     """Load configuration values from the JSON config file."""
-    with open("config.json", "r") as f:
-        return json.load(f)
+    import yaml
+    with open("config/module_config.yaml", "r") as f:
+        return yaml.safe_load(f)
 
 def analyze_recording(analyzer, wav_file, config, timestamp):
     """Analyze a WAV file using BirdNET and return detection results."""
