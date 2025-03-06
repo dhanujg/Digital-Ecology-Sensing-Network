@@ -74,6 +74,31 @@ Ensure that all files (Python modules, Dockerfiles, `config.json`) and the `loca
 
 ## Building and Running with Docker Compose
 
+### Building and then running
+
+Below is an updated section of the README that separates the Docker Compose build and run commands:
+
+
+#### Step 1: Build the Docker Images
+From the repository root, run:
+```bash
+docker-compose build
+```
+
+#### Step 2: Start the Containers
+After the build completes, start the containers with:
+```bash
+docker-compose up
+```
+Alternatively, if you prefer to run in detached mode:
+```bash
+docker-compose up -d
+```
+
+These instructions ensure that you first build the images and then run them as separate steps.
+
+#### Building and Running all at once
+
 From the repository root, run the following command to build and launch all three containers simultaneously:
 
 ```bash
