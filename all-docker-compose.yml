@@ -1,0 +1,28 @@
+version: "3.8"
+
+services:
+  audio_recording:
+    build:
+      context: .
+      dockerfile: module_dockerfiles/Dockerfile.audio_recording
+    volumes:
+      - ./local_data:/app/local_data
+      - /dev/snd:/dev/snd
+    privileged: true
+    restart: always
+
+  birdnet_analyzer:
+    build:
+      context: .
+      dockerfile: module_dockerfiles/Dockerfile.birdnet_analyzer
+    volumes:
+      - ./local_data:/app/local_data
+    restart: always
+
+  birdnet_image_demo:
+    build:
+      context: .
+      dockerfile: module_dockerfiles/Dockerfile.birdnet_image_demo
+    volumes:
+      - ./local_data:/app/local_data
+    restart: always
