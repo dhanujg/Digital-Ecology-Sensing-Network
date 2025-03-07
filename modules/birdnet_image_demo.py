@@ -1,31 +1,23 @@
 """
-BirdNET Image Demo Module
--------------------------
-Objective:
-- Check for an active internet connection.
-- Continuously monitor the ledger CSV (from the BirdNET data stream folder) for new bird detections.
-- When a new scientific name is found (different from the previously processed one), fetch the corresponding bird image from Wikimedia Commons and save it.
-- This module separates the image fetching functionality from the analyzer so that image updates occur only when an internet connection is available.
-
-Usage:
-Run this file to automatically fetch and update the current bird image whenever new detection data is available.
+BirdNET Image Demo Module (Raspberry Pi)
+------------------------------------------
+This module checks for an internet connection, monitors the ledger CSV for new detections,
+and fetches corresponding bird images from Wikimedia Commons when a new species is detected.
 """
 
 import os
 import time
-import json
 import csv
 import requests
 import urllib.parse
+import yaml
 
 def load_config():
-    """Load configuration values from the YAML config file."""
-    import yaml
+    # Load configuration from config/module_config.yaml
     with open("config/module_config.yaml", "r") as f:
         return yaml.safe_load(f)
 
 def check_internet_connection(test_url="https://www.google.com", timeout=5):
-    """Return True if an internet connection is detected; otherwise, False."""
     try:
         requests.get(test_url, timeout=timeout)
         return True
@@ -33,7 +25,6 @@ def check_internet_connection(test_url="https://www.google.com", timeout=5):
         return False
 
 def fetch_and_save_bird_image(scientific_name, config):
-    """Fetch the first bird image from Wikimedia Commons for the given scientific name and save it."""
     print(f"Fetching image for new bird: {scientific_name}")
     encoded_name = urllib.parse.quote(scientific_name)
     search_url = (
@@ -55,12 +46,12 @@ def fetch_and_save_bird_image(scientific_name, config):
                     print(f"Image URL: {image_url}")
                     image_response = requests.get(image_url, headers=headers, allow_redirects=True)
                     if image_response.status_code == 200:
-                        CURRENT_BIRD_IMAGE = config["CURRENT_BIRD_IMAGE"]
+                        CURRENT_BIRD_IMAGE = config["global"]["CURRENT_BIRD_IMAGE"]
                         with open(CURRENT_BIRD_IMAGE, 'wb') as img_file:
                             img_file.write(image_response.content)
                         print(f"Saved image for {scientific_name} as {CURRENT_BIRD_IMAGE}")
                     else:
-                        print(f"Failed to download image for {scientific_name}. HTTP status code: {image_response.status_code}")
+                        print(f"Failed to download image for {scientific_name}. HTTP status: {image_response.status_code}")
                 else:
                     print(f"No image URL found for {scientific_name}")
         else:
@@ -69,9 +60,8 @@ def fetch_and_save_bird_image(scientific_name, config):
         print(f"Error fetching image for {scientific_name}: {e}")
 
 def monitor_ledger(config):
-    """Continuously check the ledger CSV for new detections and trigger image fetching when needed."""
-    LEDGER_FILE = config["LEDGER_FILE"]
-    last_processed_scientific_name = None
+    LEDGER_FILE = config["global"]["LEDGER_FILE"]
+    last_scientific_name = None
     while True:
         try:
             with open(LEDGER_FILE, 'r') as csvfile:
@@ -80,12 +70,12 @@ def monitor_ledger(config):
                 if rows:
                     last_row = rows[-1]
                     scientific_name = last_row.get("scientific_name", "")
-                    if scientific_name and scientific_name != last_processed_scientific_name:
+                    if scientific_name and scientific_name != last_scientific_name:
                         fetch_and_save_bird_image(scientific_name, config)
-                        last_processed_scientific_name = scientific_name
+                        last_scientific_name = scientific_name
         except Exception as e:
             print(f"Error reading ledger file: {e}")
-        time.sleep(3)  # Polling interval in seconds
+        time.sleep(3)
 
 def main():
     config = load_config()
