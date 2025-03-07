@@ -1,0 +1,20 @@
+# Dockerfile.audio_recording_mac
+FROM python:3.9-slim
+
+# Install system dependencies needed for audio recording
+RUN apt-get update && apt-get install -y \
+    portaudio19-dev \
+    python3-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+# Copy the modules and config folder into the container
+COPY modules/ .
+COPY config/ config/
+
+# Install Python dependencies
+RUN pip install --no-cache-dir numpy sounddevice birdnetlib requests pyyaml
+
+# Run the Mac version of the audio recording module
+CMD ["python", "mac-M/audio_recording_mac.py"]

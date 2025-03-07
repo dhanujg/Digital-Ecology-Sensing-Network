@@ -1,0 +1,16 @@
+# Dockerfile.birdnet_analyzer_mac
+FROM python:3.9-slim
+
+RUN apt-get update && apt-get install -y \
+    portaudio19-dev \
+    python3-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+COPY modules/ .
+COPY config/ config/
+
+RUN pip install --no-cache-dir numpy birdnetlib requests pyyaml
+
+CMD ["python", "mac-M/birdnet_analyzer_mac.py"]
