@@ -1,0 +1,26 @@
+version: "3.8"
+
+services:
+  audio_recording_mac:
+    build:
+      context: .
+      dockerfile: module_dockerfiles/mac/Dockerfile.audio_recording_mac
+    volumes:
+      - ./local_data:/app/local_data
+    restart: always
+
+  birdnet_analyzer_mac:
+    build:
+      context: .
+      dockerfile: module_dockerfiles/mac/Dockerfile.birdnet_analyzer_mac
+    volumes:
+      - ./local_data:/app/local_data
+    restart: always
+
+  birdnet_image_demo_mac:
+    build:
+      context: .
+      dockerfile: module_dockerfiles/mac/Dockerfile.birdnet_image_demo_mac
+    volumes:
+      - ./local_data:/app/local_data
+    restart: always
