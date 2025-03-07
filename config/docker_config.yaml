@@ -1,0 +1,13 @@
+modules:
+  audio_recording:
+    active: true
+    main_code_fname: audio_recording.py
+    dockerfile_fname: Dockerfile.audio_recording
+  birdnet_analyzer:
+    active: true
+    main_code_fname: birdnet_analyzer.py
+    dockerfile_fname: Dockerfile.birdnet_analyzer
+  birdnet_image_demo:
+    active: true
+    main_code_fname: birdnet_image_demo.py
+    dockerfile_fname: Dockerfile.birdnet_image_demo
