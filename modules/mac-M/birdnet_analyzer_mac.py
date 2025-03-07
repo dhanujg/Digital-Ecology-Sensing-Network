@@ -1,9 +1,8 @@
 """
 BirdNET Analyzer Module - Mac Version
 ---------------------------------------
-This module loads the BirdNET model, monitors the recordings folder for new WAV files,
-analyzes each recording, updates the detection ledger CSV, and deletes processed files.
-This version is adapted for testing on a Mac (M series chip).
+This module (for Mac M series) loads the BirdNET model, monitors the recordings folder for new WAV files,
+analyzes each recording, updates the ledger CSV, and deletes processed files.
 """
 
 import os
@@ -13,29 +12,30 @@ from datetime import datetime, timedelta
 from threading import Lock
 from birdnetlib import Recording
 from birdnetlib.analyzer import Analyzer
+import yaml
 
 csv_lock = Lock()
 
 def load_config():
-    import yaml
+    # Load configuration from config/module_config.yaml
     with open("config/module_config.yaml", "r") as f:
         return yaml.safe_load(f)
 
 def analyze_recording(analyzer, wav_file, config, timestamp):
     print(f"Analyzing {wav_file}...")
-    LAT = config["LAT"]
-    LON = config["LON"]
+    LAT = config["global"]["LAT"]
+    LON = config["global"]["LON"]
     recording = Recording(analyzer, wav_file, lat=LAT, lon=LON, min_conf=0.25)
     recording.analyze()
     return recording.detections
 
 def update_ledger(detections, timestamp, config):
-    print("Updating ledger CSV...")
-    LAT = config["LAT"]
-    LON = config["LON"]
-    CHUNK_DURATION = config["CHUNK_DURATION"]
-    BUFFER_SIZE = config["BUFFER_SIZE"]
-    LEDGER_FILE = config["LEDGER_FILE"]
+    print("Updating ledger...")
+    LAT = config["global"]["LAT"]
+    LON = config["global"]["LON"]
+    CHUNK_DURATION = config["global"]["CHUNK_DURATION"]
+    BUFFER_SIZE = config["global"]["BUFFER_SIZE"]
+    LEDGER_FILE = config["global"]["LEDGER_FILE"]
 
     dt = datetime.fromtimestamp(timestamp)
     date_str = dt.strftime('%Y-%m-%d')
@@ -54,12 +54,11 @@ def update_ledger(detections, timestamp, config):
                 "end_Time": end_time_str,
                 "lat": LAT,
                 "lon": LON,
-                "label": detection.get('common_name', ''),
-                "scientific_name": detection.get('scientific_name', ''),
-                "confidence": detection.get('confidence', '')
+                "label": detection.get("common_name", ""),
+                "scientific_name": detection.get("scientific_name", ""),
+                "confidence": detection.get("confidence", "")
             })
-            # Stop after writing the first valid detection.
-            if detection.get('scientific_name', ''):
+            if detection.get("scientific_name", ""):
                 break
 
 def process_wav_file(wav_file, analyzer, config):
@@ -80,7 +79,7 @@ def process_wav_file(wav_file, analyzer, config):
         print(f"Error deleting {wav_file}: {e}")
 
 def monitor_recordings_folder(analyzer, config):
-    RECORDINGS_FOLDER = config["RECORDINGS_FOLDER"]
+    RECORDINGS_FOLDER = config["global"]["RECORDINGS_FOLDER"]
     processed_files = set()
     while True:
         files = [os.path.join(RECORDINGS_FOLDER, f) for f in os.listdir(RECORDINGS_FOLDER) if f.endswith(".wav")]
@@ -92,7 +91,7 @@ def monitor_recordings_folder(analyzer, config):
 
 def main():
     config = load_config()
-    BIRDNET_DATA_STREAM_FOLDER = config["BIRDNET_DATA_STREAM_FOLDER"]
+    BIRDNET_DATA_STREAM_FOLDER = config["global"]["BIRDNET_DATA_STREAM_FOLDER"]
     if not os.path.exists(BIRDNET_DATA_STREAM_FOLDER):
         os.makedirs(BIRDNET_DATA_STREAM_FOLDER)
     print("Loading BirdNET model (this may take a moment)...")

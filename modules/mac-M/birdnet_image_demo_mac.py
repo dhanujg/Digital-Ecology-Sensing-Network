@@ -1,9 +1,8 @@
 """
 BirdNET Image Demo Module - Mac Version
 -----------------------------------------
-This module checks for an internet connection, monitors the ledger CSV for new detections,
-and fetches corresponding bird images from Wikimedia Commons when a new detection occurs.
-This version is adapted for testing on a Mac (M series chip).
+This module (for Mac M series) checks for an internet connection, monitors the ledger CSV for new detections,
+and fetches corresponding bird images from Wikimedia Commons when a new species is detected.
 """
 
 import os
@@ -11,9 +10,10 @@ import time
 import csv
 import requests
 import urllib.parse
+import yaml
 
 def load_config():
-    import yaml
+    # Load configuration from config/module_config.yaml
     with open("config/module_config.yaml", "r") as f:
         return yaml.safe_load(f)
 
@@ -37,17 +37,17 @@ def fetch_and_save_bird_image(scientific_name, config):
     try:
         response = requests.get(search_url, headers=headers)
         data = response.json()
-        pages = data.get('query', {}).get('pages', {})
+        pages = data.get("query", {}).get("pages", {})
         if pages:
             for page in pages.values():
-                imageinfo = page.get('imageinfo', [{}])[0]
-                image_url = imageinfo.get('thumburl')
+                imageinfo = page.get("imageinfo", [{}])[0]
+                image_url = imageinfo.get("thumburl")
                 if image_url:
                     print(f"Image URL: {image_url}")
                     image_response = requests.get(image_url, headers=headers, allow_redirects=True)
                     if image_response.status_code == 200:
-                        CURRENT_BIRD_IMAGE = config["CURRENT_BIRD_IMAGE"]
-                        with open(CURRENT_BIRD_IMAGE, 'wb') as img_file:
+                        CURRENT_BIRD_IMAGE = config["global"]["CURRENT_BIRD_IMAGE"]
+                        with open(CURRENT_BIRD_IMAGE, "wb") as img_file:
                             img_file.write(image_response.content)
                         print(f"Saved image for {scientific_name} as {CURRENT_BIRD_IMAGE}")
                     else:
@@ -60,11 +60,11 @@ def fetch_and_save_bird_image(scientific_name, config):
         print(f"Error fetching image for {scientific_name}: {e}")
 
 def monitor_ledger(config):
-    LEDGER_FILE = config["LEDGER_FILE"]
+    LEDGER_FILE = config["global"]["LEDGER_FILE"]
     last_scientific_name = None
     while True:
         try:
-            with open(LEDGER_FILE, 'r') as csvfile:
+            with open(LEDGER_FILE, "r") as csvfile:
                 reader = csv.DictReader(csvfile)
                 rows = list(reader)
                 if rows:
