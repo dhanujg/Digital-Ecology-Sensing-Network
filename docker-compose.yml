@@ -1,28 +1,14 @@
 version: "3.8"
 
 services:
-  audio_recording:
+  dashboard:
     build:
       context: .
-      dockerfile: Dockerfile.audio_recording
+      dockerfile: Dockerfile.dashboard
+    ports:
+      - "5000:5000"
     volumes:
-      - ./local_data:/app/local_data
-      - /dev/snd:/dev/snd
+      - /var/run/docker.sock:/var/run/docker.sock  # Grant Docker command access
+      - ./log:/app/log                              # Mount log folder to capture command logs
     privileged: true
-    restart: always
-
-  birdnet_analyzer:
-    build:
-      context: .
-      dockerfile: Dockerfile.birdnet_analyzer
-    volumes:
-      - ./local_data:/app/local_data
-    restart: always
-
-  birdnet_image_demo:
-    build:
-      context: .
-      dockerfile: Dockerfile.birdnet_image_demo
-    volumes:
-      - ./local_data:/app/local_data
     restart: always
