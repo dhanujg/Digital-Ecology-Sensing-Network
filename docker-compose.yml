@@ -8,7 +8,8 @@ services:
     ports:
       - "5000:5000"
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock  # Grant Docker command access
-      - ./log:/app/log                              # Mount log folder to capture command logs
+      - /var/run/docker.sock:/var/run/docker.sock  # Allows Docker command execution
+      - ./log:/app/log                              # Mount the log folder for command logs and current-docker-compose.yml
+    # 'privileged: true' is included for Linux systems; on Mac/Windows it may be ignored.
     privileged: true
     restart: always
