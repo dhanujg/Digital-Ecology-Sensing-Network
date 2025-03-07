@@ -1,15 +1,19 @@
-version: "3.8"
+#version: "3.8"
 
 services:
   dashboard:
     build:
       context: .
-      dockerfile: Dockerfile.dashboard
+      dockerfile: module_dockerfiles/Dockerfile.dashboard
+      #args:
+        #BASE_IMAGE: ${BASE_IMAGE:-python:3.9-slim}
     ports:
-      - "5000:5000"
+      - "5001:5001"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock  # Allows Docker command execution
       - ./log:/app/log                              # Mount the log folder for command logs and current-docker-compose.yml
+      - ./config:/app/config
+      - ./dashboard_frontend:/app/dashboard_frontend
     # 'privileged: true' is included for Linux systems; on Mac/Windows it may be ignored.
     privileged: true
     restart: always

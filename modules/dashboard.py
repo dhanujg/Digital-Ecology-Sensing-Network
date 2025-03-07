@@ -14,18 +14,24 @@ import time
 import subprocess
 import threading
 import yaml
-from flask import Flask, request, jsonify, send_from_directory
+from flask import Flask, request, jsonify
 from flask_cors import CORS
 
-app = Flask(__name__, static_folder="../dashboard_frontend", static_url_path="")
-CORS(app)  # Enable CORS if needed for local development
+# --- 1) Compute a BASE_DIR for the /app folder (one level up from this modules file).
+BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 
-CONFIG_PATH = "config/module_config.yaml"
-LOG_DIR = "log"
+# --- 2) Compute the absolute path to the dashboard_frontend folder, config file, and logs.
+STATIC_FOLDER = os.path.join(BASE_DIR, "dashboard_frontend")
+CONFIG_PATH = os.path.join(BASE_DIR, "config", "module_config.yaml")
+LOG_DIR = os.path.join(BASE_DIR, "log")
 CURRENT_COMPOSE_FILE = os.path.join(LOG_DIR, "current-docker-compose.yml")
 
+# Create the Flask app with the computed static folder.
+app = Flask(__name__, static_folder=STATIC_FOLDER, static_url_path="")
+CORS(app)  # Enable CORS if needed for local development
+
 def load_config():
-    """Load the consolidated configuration from config/module_config.yaml."""
+    """Load the consolidated configuration from the config/module_config.yaml file."""
     with open(CONFIG_PATH, "r") as f:
         return yaml.safe_load(f)
 
@@ -45,7 +51,6 @@ def generate_compose(selected_modules, config):
                     "context": ".",
                     "dockerfile": mod_config.get("dockerfile_fname")
                 },
-                # Additional service configuration can be added here as needed.
                 "restart": "always"
             }
     compose_dict = {
@@ -55,7 +60,7 @@ def generate_compose(selected_modules, config):
     return compose_dict
 
 def write_compose_file(compose_dict):
-    """Write the given docker-compose configuration to the current-docker-compose.yml file in the log folder."""
+    """Write the docker-compose configuration to log/current-docker-compose.yml."""
     if not os.path.exists(LOG_DIR):
         os.makedirs(LOG_DIR)
     with open(CURRENT_COMPOSE_FILE, "w") as f:
@@ -69,31 +74,32 @@ def available_modules():
     available = {}
     for mod_name, mod_data in modules_config.items():
         if mod_data.get("available", False):
-            # Return only the module name and its main code filename for display.
             available[mod_name] = mod_data.get("main_code_fname", "")
     return jsonify(available)
 
 @app.route("/api/build", methods=["POST"])
 def build_modules():
     """
-    Build selected modules.
+    Build the selected modules.
     Expects JSON payload: { "modules": [ "audio_recording", "birdnet_analyzer", ... ] }
     Generates the effective docker-compose file, writes it to log/current-docker-compose.yml,
-    and executes the build command asynchronously.
+    and executes docker-compose build asynchronously.
     """
     data = request.get_json()
     selected_modules = data.get("modules", [])
     config = load_config()
     compose_config = generate_compose(selected_modules, config)
     write_compose_file(compose_config)
+
     build_cmd = ["docker-compose", "-f", CURRENT_COMPOSE_FILE, "build"] + selected_modules
 
     def run_build():
         try:
             proc = subprocess.Popen(build_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
             stdout, stderr = proc.communicate()
-            # For simplicity, we just log the output.
-            with open(os.path.join(LOG_DIR, f"build_log_{int(time.time())}.txt"), "w") as log_file:
+            # Log the build output
+            timestamp = int(time.time())
+            with open(os.path.join(LOG_DIR, f"build_log_{timestamp}.txt"), "w") as log_file:
                 log_file.write("Command: " + " ".join(build_cmd) + "\n")
                 log_file.write(stdout + "\n" + stderr)
         except Exception as e:
@@ -105,7 +111,7 @@ def build_modules():
 @app.route("/api/run", methods=["POST"])
 def run_modules():
     """
-    Run selected modules.
+    Run the selected modules.
     Expects JSON payload: { "modules": [ "audio_recording", "birdnet_analyzer", ... ] }
     Uses the generated docker-compose file from log/current-docker-compose.yml and executes 'docker-compose up -d'.
     """
@@ -114,15 +120,18 @@ def run_modules():
     config = load_config()
     compose_config = generate_compose(selected_modules, config)
     write_compose_file(compose_config)
+
     run_cmd = ["docker-compose", "-f", CURRENT_COMPOSE_FILE, "up", "-d"] + selected_modules
     try:
         proc = subprocess.Popen(run_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
         stdout, stderr = proc.communicate()
         output = stdout + "\n" + stderr
-        # Optionally log the output.
-        with open(os.path.join(LOG_DIR, f"run_log_{int(time.time())}.txt"), "w") as log_file:
+
+        timestamp = int(time.time())
+        with open(os.path.join(LOG_DIR, f"run_log_{timestamp}.txt"), "w") as log_file:
             log_file.write("Command: " + " ".join(run_cmd) + "\n")
             log_file.write(output)
+
         return jsonify({"message": "Run command executed", "output": output})
     except Exception as e:
         return jsonify({"error": str(e)}), 500
@@ -131,7 +140,7 @@ def run_modules():
 def module_status():
     """
     Check and return the status of running containers.
-    This uses 'docker-compose ps' on the current docker-compose file.
+    This calls 'docker-compose ps' on the current docker-compose file in log/.
     """
     try:
         status_cmd = ["docker-compose", "-f", CURRENT_COMPOSE_FILE, "ps"]
@@ -140,9 +149,13 @@ def module_status():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-# Terminal endpoints are stubbed out; for full interactive terminal integration, consider Flask-SocketIO.
 @app.route("/api/terminal/<module>", methods=["GET", "POST"])
 def terminal(module):
+    """
+    Provides a stubbed-out terminal integration.
+    GET: returns a placeholder message
+    POST: runs 'docker exec <module> bash -c "<command>"'
+    """
     if request.method == "GET":
         return jsonify({"message": "Terminal streaming not implemented. Use websockets integration."})
     else:
@@ -157,11 +170,13 @@ def terminal(module):
         except Exception as e:
             return jsonify({"error": str(e)}), 500
 
-# Serve static files for the dashboard frontend
-@app.route("/<path:path>")
-def static_files(path):
-    return send_from_directory(app.static_folder, path)
+@app.route("/")
+def index():
+    """
+    Serve index.html from the computed static folder.
+    """
+    return app.send_static_file("index.html")
 
 if __name__ == "__main__":
-    # Run the Flask server on port 5000, accessible to all interfaces.
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    # Listen on port 5001; the host port is mapped in docker-compose.yml
+    app.run(host="0.0.0.0", port=5001, debug=True)
