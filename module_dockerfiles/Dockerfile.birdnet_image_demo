@@ -1,0 +1,19 @@
+# Dockerfile.birdnet_image_demo
+FROM arm64v8/python:3.9-slim
+
+# Install any necessary system dependencies
+RUN apt-get update && apt-get install -y \
+    python3-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+# Copy the modules folder into the container
+COPY modules/ .
+COPY config/ config/
+
+# Install required Python dependencies
+RUN pip install --no-cache-dir requests numpy
+
+# Run the BirdNET image demo module
+CMD ["python", "birdnet_image_demo.py"]
