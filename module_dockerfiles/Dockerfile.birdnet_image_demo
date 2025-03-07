@@ -1,19 +1,17 @@
 # Dockerfile.birdnet_image_demo
+# For Raspberry Pi (ARM-based)
 FROM arm64v8/python:3.9-slim
 
-# Install any necessary system dependencies
-RUN apt-get update && apt-get install -y \
-    python3-dev \
-    && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y python3-dev && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
-# Copy the modules folder into the container
-COPY modules/ .
-COPY config/ config/
+# Copy modules and config folders into the container
+COPY modules/ ./modules/
+COPY config/ ./config/
 
 # Install required Python dependencies
-RUN pip install --no-cache-dir requests numpy
+RUN pip install --no-cache-dir requests numpy pyyaml
 
-# Run the BirdNET image demo module
-CMD ["python", "birdnet_image_demo.py"]
+# Run the birdnet image demo module (Raspberry Pi version)
+CMD ["python", "modules/birdnet_image_demo.py"]

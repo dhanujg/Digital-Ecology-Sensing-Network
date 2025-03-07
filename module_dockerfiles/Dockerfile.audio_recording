@@ -1,7 +1,8 @@
 # Dockerfile.audio_recording
+# For Raspberry Pi (ARM-based)
 FROM arm64v8/python:3.9-slim
 
-# Install system dependencies needed for audio recording (e.g., portaudio)
+# Install system dependencies needed for audio recording
 RUN apt-get update && apt-get install -y \
     portaudio19-dev \
     python3-dev \
@@ -9,12 +10,12 @@ RUN apt-get update && apt-get install -y \
 
 WORKDIR /app
 
-# Copy the modules folder from the repository into the container
-COPY modules/ .
-COPY config/ config/
+# Copy the entire modules folder and config folder into the container
+COPY modules/ ./modules/
+COPY config/ ./config/
 
-# Install Python dependencies
-RUN pip install --no-cache-dir numpy sounddevice birdnetlib requests
+# Install required Python dependencies
+RUN pip install --no-cache-dir numpy sounddevice birdnetlib requests pyyaml
 
-# Run the audio recording module
-CMD ["python", "audio_recording.py"]
+# Run the audio recording module (Raspberry Pi version)
+CMD ["python", "modules/audio_recording.py"]

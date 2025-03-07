@@ -1,7 +1,7 @@
 # Dockerfile.birdnet_analyzer
+# For Raspberry Pi (ARM-based)
 FROM arm64v8/python:3.9-slim
 
-# Install system dependencies
 RUN apt-get update && apt-get install -y \
     portaudio19-dev \
     python3-dev \
@@ -9,12 +9,12 @@ RUN apt-get update && apt-get install -y \
 
 WORKDIR /app
 
-# Copy the modules folder into the container
-COPY modules/ .
-COPY config/ config/
+# Copy modules and config folders into the container
+COPY modules/ ./modules/
+COPY config/ ./config/
 
-# Install required Python libraries
-RUN pip install --no-cache-dir numpy birdnetlib requests
+# Install required Python dependencies
+RUN pip install --no-cache-dir numpy birdnetlib requests pyyaml
 
-# Run the BirdNET analyzer module
-CMD ["python", "birdnet_analyzer.py"]
+# Run the BirdNET analyzer module (Raspberry Pi version)
+CMD ["python", "modules/birdnet_analyzer.py"]
