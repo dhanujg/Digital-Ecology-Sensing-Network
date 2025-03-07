@@ -1,11 +1,51 @@
-BUFFER_SIZE: 2              # Number of audio chunks to combine per recording (e.g., 2 chunks)
-CHUNK_DURATION: 6           # Duration in seconds of each audio chunk recorded
-SAMPLE_RATE: 44100          # Audio sampling rate in Hz
-CHANNELS: 4                 # Number of audio channels (e.g., microphone configuration)
-MAX_RECORDINGS: 5           # Maximum number of recordings to keep (if implementing cleanup)
-LAT: 30.2672                # Latitude for BirdNET analysis (Austin, Texas)
-LON: -97.7431               # Longitude for BirdNET analysis (Austin, Texas)
-RECORDINGS_FOLDER: recordings_data    # Folder to store recorded WAV files from the audio recording module
-BIRDNET_DATA_STREAM_FOLDER: birdnet_data_stream   # Folder to store the ledger CSV and bird images from analysis
-LEDGER_FILE: birdnet_data_stream/ledger.csv         # Path to the CSV file that records detection results
-CURRENT_BIRD_IMAGE: birdnet_data_stream/current_bird.png   # Path where the current bird image is saved
+# Global configuration parameters for the Digital Ecology Sensing Network.
+global:
+  BUFFER_SIZE: 2              # Number of audio chunks to combine per recording (e.g., 2 chunks)
+  CHUNK_DURATION: 6           # Duration (in seconds) of each audio chunk recorded
+  SAMPLE_RATE: 44100          # Audio sampling rate in Hz
+  CHANNELS: 4                 # Number of audio channels (e.g., microphone configuration)
+  MAX_RECORDINGS: 5           # Maximum number of recordings to keep (for cleanup purposes)
+  LAT: 30.2672                # Latitude for BirdNET analysis (Austin, Texas)
+  LON: -97.7431               # Longitude for BirdNET analysis (Austin, Texas)
+  RECORDINGS_FOLDER: recordings_data    # Folder to store recorded WAV files from the audio recording module
+  BIRDNET_DATA_STREAM_FOLDER: birdnet_data_stream   # Folder to store the ledger CSV and bird images from analysis
+  LEDGER_FILE: birdnet_data_stream/ledger.csv         # Path to the CSV file that records detection results
+  CURRENT_BIRD_IMAGE: birdnet_data_stream/current_bird.png   # Path where the current bird image is saved
+
+# Module definitions and associated file names.
+modules:
+  #--------------------------------------------------------------------------------------------------------------
+  dashboard:
+    available: false          # This module is initially run and does not need to be re-run via the dashboard.
+    main_code_fname: modules/dashboard.py   # Main code file for the dashboard module.
+    # dockerfile_fname: module_dockerfiles/Dockerfile.dashboard  # (Optional) Dockerfile for the dashboard module.
+  #--------------------------------------------------------------------------------------------------------------
+  audio_recording:
+    available: true           # Audio recording module is active.
+    main_code_fname: modules/audio_recording.py  # Main code file for the audio recording module.
+    dockerfile_fname: module_dockerfiles/Dockerfile.audio_recording  # Dockerfile for the audio recording module.
+  #--------------------------------------------------------------------------------------------------------------
+  birdnet_analyzer:
+    available: true           # BirdNET analyzer module is active.
+    main_code_fname: modules/birdnet_analyzer.py  # Main code file for the BirdNET analyzer module.
+    dockerfile_fname: module_dockerfiles/Dockerfile.birdnet_analyzer  # Dockerfile for the BirdNET analyzer module.
+  #--------------------------------------------------------------------------------------------------------------
+  birdnet_image_demo:
+    available: true           # BirdNET image demo module is active.
+    main_code_fname: modules/birdnet_image_demo.py  # Main code file for the BirdNET image demo module.
+    dockerfile_fname: module_dockerfiles/Dockerfile.birdnet_image_demo  # Dockerfile for the BirdNET image demo module.
+  #--------------------------------------------------------------------------------------------------------------
+  audio_recording_mac:
+    available: true           # Mac version of the audio recording module.
+    main_code_fname: modules/mac-M/audio_recording_mac.py  # Main code file for the Mac audio recording module.
+    dockerfile_fname: module_dockerfiles/mac-M/Dockerfile.audio_recording_mac  # Dockerfile for the Mac audio recording module.
+  #--------------------------------------------------------------------------------------------------------------
+  birdnet_analyzer_mac:
+    available: true           # Mac version of the BirdNET analyzer module.
+    main_code_fname: modules/mac-M/birdnet_analyzer_mac.py  # Main code file for the Mac BirdNET analyzer module.
+    dockerfile_fname: module_dockerfiles/mac-M/Dockerfile.birdnet_analyzer_mac  # Dockerfile for the Mac BirdNET analyzer module.
+  #--------------------------------------------------------------------------------------------------------------
+  birdnet_image_demo_mac:
+    available: true           # Mac version of the BirdNET image demo module.
+    main_code_fname: modules/mac-M/birdnet_image_demo_mac.py  # Main code file for the Mac BirdNET image demo module.
+    dockerfile_fname: module_dockerfiles/mac-M/Dockerfile.birdnet_image_demo_mac  # Dockerfile for the Mac BirdNET image demo module.
