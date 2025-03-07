@@ -114,6 +114,45 @@ All containers share the `local_data/` folder, ensuring that audio recordings, l
 
 ---
 
+# Repository Structure
+
+Below is current repository layout:
+
+```
+.
+├── modules/                          # Folder that holds the backend code for each module
+│   ├── mac-M/                          # Folder for modules to run on mac series M
+│       ├── audio_recording_mac.py      # Audio Recording Module to run on mac series M
+│       ├── birdnet_analyzer_mac.py     # On Device AI Birdnet Analysis Module to run on mac series M
+│       └── birdnet_image_demo_mac.py   # On Device Image Retrieval Module to run on mac series M - Used in Demos
+│   ├── audio_recording.py              # Audio Recording Module for Raspberry Pi
+│   ├── birdnet_analyzer.py             # On Device AI Birdnet Analysis Module for Raspberry Pi
+│   ├── birdnet_image_demo.py           # On Device Image Retrieval Module for Birdnet Results - Used in Demos
+│   ├── dashboard.py                    # Dashboard backend module
+│   └── ...                             # Other module-specific files will be in this folder here
+├── config/                           # Folder that holds user modifiable config files for system
+│   └── module_config.yaml              # YAML configuration for toggleable global parameters, available module names/filepaths/parameters
+├── module_dockerfiles/               # Folder that holds the dockerfiles to create the containers for each individual module
+│   ├── mac-M/                          # Folder for module dockerfiles to run on mac series M
+│       ├── audio_recording_mac.py      
+│       ├── birdnet_analyzer_mac.py     
+│       └── birdnet_image_demo_mac.py   
+│   ├── Dockerfile.audio_recording
+│   ├── Dockerfile.birdnet_analyzer
+│   └── Dockerfile.birdnet_image_demo
+├── dashboard_frontend/             # Folder for Bundled React/JS/CSS for the dashboard frontend
+│   ├── index.html                    # Main HTML file for the dashboard
+│   ├── main.js                       # React/JS code
+│   └── styles.css                    # Custom CSS (Material-UI used via CDN or in JS)
+├── local_data/                     # Shared data folder (recordings, ledger, images, etc.)
+├── log/                            # Folder for Logs/snapshots/and alternate forms of Docker Compose commands
+│   ├── all-docker-compose-mac.yml    # docker compose to run all the available non-dashboard modules on mac series M
+│   ├── all-docker-compose.yml        # docker compose to run all the available non-dashboard modules on Raspberry pi 5
+│   └── current-docker-compose.yml    # docker compose that is recreated to display the compose utilized within the dashboard
+├── docker-compose.yml              # Docker Compose for Dashboard spinup
+└── README.md                       # Instructions and Details for Repo
+```
+
 ## File Descriptions
 
 Below is a brief three-word description for each file in the repository:
