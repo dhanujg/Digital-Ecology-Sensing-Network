@@ -4,7 +4,7 @@ services:
   dashboard:
     build:
       context: .
-      dockerfile: module_dockerfiles/Dockerfile.dashboard
+      dockerfile: modules/dashboard/Dockerfile.dashboard
       #args:
         #BASE_IMAGE: ${BASE_IMAGE:-python:3.9-slim}
     ports:
@@ -13,7 +13,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock  # Allows Docker command execution
       - ./log:/app/log                              # Mount the log folder for command logs and current-docker-compose.yml
       - ./config:/app/config
-      - ./dashboard_frontend:/app/dashboard_frontend
+      - ./modules/dashboard/dashboard_frontend:/app/dashboard_frontend
     # 'privileged: true' is included for Linux systems; on Mac/Windows it may be ignored.
     privileged: true
     restart: always
