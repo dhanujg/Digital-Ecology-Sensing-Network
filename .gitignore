@@ -2,3 +2,4 @@ local_data/
 notes/
 old/
 log/current-docker-compose.yml
+.DS_Store
