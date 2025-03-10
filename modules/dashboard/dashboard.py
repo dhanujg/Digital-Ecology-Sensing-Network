@@ -17,7 +17,7 @@ import yaml
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 
-# --- 1) Compute a BASE_DIR for the /app folder (one level up from this modules file).
+# --- 1) Compute a BASE_DIR for the /app folder (two levels up from this modules file).
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 
 # --- 2) Compute the absolute path to the dashboard_frontend folder, config file, and logs.
