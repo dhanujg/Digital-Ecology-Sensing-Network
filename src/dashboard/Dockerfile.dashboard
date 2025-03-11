@@ -1,0 +1,23 @@
+# Dockerfile.dashboard
+FROM python:3.9-slim
+
+# Install system dependencies (python3-dev for building any native extensions)
+RUN apt-get update && apt-get install -y \
+    python3-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+# Copy the dashboard backend, configuration, and frontend files into the container.
+COPY modules/dashboard/dashboard.py ./dashboard.py
+COPY config/ ./config/
+COPY modules/dashboard/dashboard_frontend/ ./dashboard_frontend/
+
+# Install required Python dependencies.
+RUN pip install --no-cache-dir flask flask-cors pyyaml
+
+# Expose port 5001 for the Flask app.
+EXPOSE 5001
+
+# Start the dashboard backend.
+CMD ["python", "dashboard.py"]
