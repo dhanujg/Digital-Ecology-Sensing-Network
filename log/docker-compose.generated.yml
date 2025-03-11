@@ -1,0 +1,32 @@
+services:
+  audio_recording_mac:
+    build:
+      args:
+        BASE_IMAGE: python:3.9-slim
+      context: .
+      dockerfile: modules/mac-M/audio_recording_mac/Dockerfile.audio_recording_mac
+    restart: always
+    volumes:
+    - ./local_data:/app/local_data
+    - ./log:/app/log
+  birdnet_analyzer_mac:
+    build:
+      args:
+        BASE_IMAGE: python:3.9-slim
+      context: .
+      dockerfile: modules/mac-M/birdnet_analyzer_mac/Dockerfile.birdnet_analyzer_mac
+    restart: always
+    volumes:
+    - ./local_data:/app/local_data
+    - ./log:/app/log
+  birdnet_image_demo_mac:
+    build:
+      args:
+        BASE_IMAGE: python:3.9-slim
+      context: .
+      dockerfile: modules/mac-M/birdnet_image_demo_mac/Dockerfile.birdnet_image_demo_mac
+    restart: always
+    volumes:
+    - ./local_data:/app/local_data
+    - ./log:/app/log
+version: '3.8'
