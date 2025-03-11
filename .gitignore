@@ -3,3 +3,4 @@ notes/
 old/
 log/current-docker-compose.yml
 .DS_Store
+src/sys_func/__pycache__/docker_composer.cpython-39.pyc
