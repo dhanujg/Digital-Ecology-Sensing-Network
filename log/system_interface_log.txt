@@ -1,0 +1,4 @@
+[2025-03-11 15:27:44] build_docker_compose: Created /Users/dgandikota/Documents/Code/keittlab/Digital-Ecology-Sensing-Network/log/docker-compose.generated.yml with modules: ['audio_recording_mac', 'birdnet_analyzer_mac', 'birdnet_image_demo_mac']
+[2025-03-11 15:27:44] Updated /Users/dgandikota/Documents/Code/keittlab/Digital-Ecology-Sensing-Network/log/system_status_var.json with docker-compose_build=true, docker-compose_run=false.
+[2025-03-11 15:33:34] build_docker_compose: Created /Users/dgandikota/Documents/Code/keittlab/Digital-Ecology-Sensing-Network/log/docker-compose.generated.yml with modules: ['audio_recording_mac', 'birdnet_analyzer_mac', 'birdnet_image_demo_mac']
+[2025-03-11 15:33:34] Updated /Users/dgandikota/Documents/Code/keittlab/Digital-Ecology-Sensing-Network/log/system_status_var.json with docker-compose_build=true, docker-compose_run=false.
